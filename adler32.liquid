@@ -1,0 +1,26 @@
+{%- assign input = "Hello World!" -%}
+
+{%- assign ascii = "~}|{zyxwvutsrqponmlkjihgfedcba`_^]\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?>=<;:9876543210/.-,+*)('&%$#" | append: '"! ' -%}
+{%- assign a = 1 -%}
+{%- assign b = 0 -%}
+{%- assign charsplit = input | strip | split: '' -%}
+{%- for char in charsplit -%}
+    {%- assign ascii_split = ascii | split: char -%}
+    {%- assign pos = ascii_split[0] | size -%}
+    {%- assign ascii_code = 126 | minus: pos -%}
+    {%- assign a = a | plus: ascii_code | modulo: 65521 -%}
+    {%- assign b = b | plus: a | modulo: 65521 -%}
+{%- endfor %}
+{%- assign hash_dec = b | times: 65536 | plus: a -%}
+{%- assign hexchar = '0123456789abcdef' | split: '' -%}
+{%- assign hash = '' -%}
+{%- assign x = hash_dec -%}
+{%- for i in (1..200) -%}
+    {%- assign remainder = x | modulo: 16 -%}
+    {%- assign hash = hash | prepend: hexchar[remainder] -%}
+    {%- if x < 16 -%}
+        {%- break -%}
+    {%- endif -%}
+    {%- assign x = x | divided_by: 16 | floor -%}
+{%- endfor -%}
+{%- assign hash = hash | prepend: '00000000' | slice: -8, 8 -%}
